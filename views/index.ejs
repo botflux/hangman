@@ -30,6 +30,12 @@
             game: null,
             setGame (game) {
                 this.game = game
+            },
+            isLetterTried (letter) {
+                if (this.game == null)
+                    return false
+
+                return this.game.triedLetters.includes(letter)
             }
         })
 
@@ -43,6 +49,16 @@
                             : ""
                     })
                 }
+            }
+        }
+
+        function KeyboardKey ({ key }) {
+            return {
+                $template: "#keyboard-key-template",
+                key,
+                get isTried () {
+                    return this.store.isLetterTried(key)
+                },
             }
         }
 
@@ -61,7 +77,7 @@
                     this.store.setGame(
                         await tryLetter(letter)
                     )
-                }
+                },
             }
         }
 
@@ -76,17 +92,22 @@
 
         createApp({
             Word,
+            KeyboardKey,
             Keyboard,
             Game,
             store
         }).mount("#app")
     </script>
 
+    <template id="keyboard-key-template">
+        <button :class="{ 'keyboard-key': true, 'keyboard-key-disabled': isTried }" :disabled="isTried">
+            {{ key }}
+        </button>
+    </template>
+
     <template id="keyboard-template">
         <div class="keyboard-line" v-for="line in lines">
-            <button class="keyboard-key" v-for="key in line" @click="tryLetter(key)">
-                {{ key }}
-            </button>
+            <div v-for="key in line" v-scope="KeyboardKey({ key })" @click="tryLetter(key)"></div>
         </div>
     </template>
 
@@ -124,9 +145,6 @@
                 </style>
             </div>
         </div>
-    </template>
-
-    <template id="background-template">
     </template>
 
     <header class="page-header">

@@ -40,6 +40,7 @@ type GameView = {
   letters: LetterStateView[]
   maxFailedAttempts: number
   failedAttempts: number
+  triedLetters: string[]
 }
 
 function gameView (game: Game): GameView {
@@ -47,7 +48,8 @@ function gameView (game: Game): GameView {
     state,
     word,
     maxFailedAttempts,
-    failedAttempts
+    failedAttempts,
+    triedLetters
   } = game
 
   return {
@@ -57,6 +59,7 @@ function gameView (game: Game): GameView {
       ? { type: "hidden" }
       : { type: "discovered", letter: letter.letter }
     ),
-    state
+    state,
+    triedLetters
   }
 }

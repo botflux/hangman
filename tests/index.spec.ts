@@ -1,7 +1,7 @@
 import {deepEqual, throws} from "node:assert/strict"
 import {describe, it} from "node:test";
-import {initGame, tryLetter} from "../src/domain/game";
-import {discoverLetter, initWord} from "../src/domain/word";
+import {Game, initGame, tryLetter} from "../src/domain/game";
+import {discoverLetter, initWord, Word} from "../src/domain/word";
 import {InvalidLetterError} from "../src/domain/errors/invalid-letter.error";
 
 describe("word", function () {
@@ -42,7 +42,7 @@ describe("word", function () {
                         letter: "e"
                     }
                 ]
-            })
+            } satisfies Word)
         })
     })
 
@@ -236,8 +236,9 @@ describe("game state", function () {
                             letter: "o"
                         }
                     ]
-                }
-            })
+                },
+                triedLetters: []
+            } satisfies Game)
         })
     })
 
@@ -278,8 +279,9 @@ describe("game state", function () {
                             letter: "o"
                         }
                     ]
-                }
-            })
+                },
+                triedLetters: [ "h" ]
+            } satisfies Game)
         })
 
         it("should be able to remove an attempt if the letter is incorrect", function () {
@@ -318,8 +320,9 @@ describe("game state", function () {
                             letter: "o"
                         }
                     ]
-                }
-            })
+                },
+                triedLetters: [ "j" ]
+            } satisfies Game)
         })
 
         it("should be able to end the game and discover all letters if the maximum amount of attempt is reached", function () {
@@ -358,8 +361,9 @@ describe("game state", function () {
                             letter: "o"
                         }
                     ]
-                }
-            })
+                },
+                triedLetters: [ "j" ]
+            } satisfies Game)
         })
 
         it ("should be able to end the game if the word is discovered before the maximum amount of attempt is reached", function () {
@@ -398,10 +402,9 @@ describe("game state", function () {
                             letter: "o"
                         }
                     ]
-                }
-            })
+                },
+                triedLetters: [ "h", "e", "l", "o" ]
+            } satisfies Game)
         })
-
     })
 })
-
