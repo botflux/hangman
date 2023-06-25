@@ -13,16 +13,128 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
 </head>
 <body>
+    <script type="module">
+        import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
+
+        async function getGame () {
+            const response = await fetch ("/game")
+            return await response.json()
+        }
+
+        async function tryLetter (letter) {
+            const response = await fetch(`/try-letter/${letter}`)
+            return await response.json()
+        }
+
+        const store = reactive({
+            game: null,
+            setGame (game) {
+                this.game = game
+            }
+        })
+
+        function Word () {
+            return {
+                $template: "#word-template",
+                get letters () {
+                    return this.store.game.letters.map (letter => {
+                        return letter.type === "discovered"
+                            ? letter.letter
+                            : ""
+                    })
+                }
+            }
+        }
+
+        function Keyboard () {
+            return {
+                $template: "#keyboard-template",
+                _keys: [
+                    "azertyuiop", 
+                    "qsdfghjklm",
+                    "wxcvbn"
+                ],
+                get lines () {
+                    return this._keys.map (keys => keys.split(""))
+                },
+                async tryLetter (letter) {
+                    this.store.setGame(
+                        await tryLetter(letter)
+                    )
+                }
+            }
+        }
+
+        function Game () {
+            return {
+                $template: "#game-template",
+                async mounted () {
+                    store.setGame(await getGame())
+                }
+            }
+        }
+
+        createApp({
+            Word,
+            Keyboard,
+            Game,
+            store
+        }).mount("#app")
+    </script>
+
+    <template id="keyboard-template">
+        <div class="keyboard-line" v-for="line in lines">
+            <button class="keyboard-key" v-for="key in line" @click="tryLetter(key)">
+                {{ key }}
+            </button>
+        </div>
+    </template>
+
+    <template id="word-template">
+        <div class="word">
+            <div v-for="letter in letters" class="tile">
+                {{ letter }}
+            </div>
+        </div>
+    </template>
+
+    <template id="game-template">
+        <div v-if="store.game !== null">
+            <div class="attemps">
+                {{ store.game.failedAttempts }} / {{ store.game.maxFailedAttempts }} attemps
+            </div>
+
+            <div v-scope="Word()"></div>
+
+            <div v-scope="Keyboard()"></div>
+
+            <div v-if="store.game !== null && store.game.state === 'lost'">
+                <style>
+                    html {
+                        background-color: #ff000033;
+                    }
+                </style>
+            </div>
+
+            <div v-if="store.game !== null && store.game.state === 'won'">
+                <style>
+                    html {
+                        background-color: #00ff0033;
+                    }
+                </style>
+            </div>
+        </div>
+    </template>
+
+    <template id="background-template">
+    </template>
+
     <header class="page-header">
         <h1>Hangman game</h1>
     </header>
 
-    <%- include('main.ejs', { game }); %>
-
-    <script src="https://unpkg.com/htmx.org@1.9.2" integrity="sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.js"></script>
-    <script>
-        htmx.logAll()
-    </script>
+    <main id="app">        
+        <div v-scope="Game()" @vue:mounted="mounted"></div>
+    </main>   
 </body>
 </html>
