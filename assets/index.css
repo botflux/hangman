@@ -1,0 +1,30 @@
+html {
+    background-color: #00000022;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.page-header {
+    display: flex;
+    justify-content: center;
+}
+
+main {
+    max-width: 30vw;
+    margin: 0 auto;
+}
+
+.word {
+    display: flex;
+    justify-content: center;
+}
+
+.tile {
+    width: 60px;
+    height: 60px;
+    background-color: #00000055;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 4px;
+    border-radius: 10%;
+}

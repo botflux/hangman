@@ -1,0 +1,40 @@
+
+<main id="main">
+    <div class="attempts">
+        <%= game.failedAttempts %> / <%= game.maxFailedAttempts %> attempts
+    </div>
+
+    <div class="word">
+        <% for (const letter of game.letters) { %>
+            <div class="tile">
+                <%= letter %>
+            </div>
+        <% } %>
+    </div>
+
+    <form
+            hx-boost="true"
+            hx-post="/try-letter"
+            hx-swap="outerHTML"
+            hx-target="#main"
+            hx-trigger="submit"
+    >
+        <input type="text" name="letter" id="letter-input">
+        <button type="submit">Send</button>
+    </form>
+
+    <% if (game.state === "lost") { %>
+        <style>
+            html {
+                background-color: #ff000033;
+            }
+        </style>
+    <% } else if (game.state === "won") { %>
+        <style>
+            html {
+                background-color: #00ff0033;
+            }
+        </style>
+    <% } %>
+
+</main>
